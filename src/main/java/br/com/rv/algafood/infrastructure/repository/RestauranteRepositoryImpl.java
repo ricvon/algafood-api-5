@@ -40,21 +40,21 @@ public class RestauranteRepositoryImpl implements RestauranteRepository{
 	
 	@Transactional
 	@Override
-	public Restaurante salvar(Restaurante Restaurante) {
-		return manager.merge(Restaurante);
+	public Restaurante salvar(Restaurante restaurante) {
+		return manager.merge(restaurante);
 	}
 	
 	@Transactional
 	@Override
 	public void remover(Long id) {
 		
-		Restaurante Restaurante = buscar(id);
+		Restaurante restaurante = buscar(id);
 		
-		if (Restaurante == null) {
+		if (restaurante == null) {
 			throw new EmptyResultDataAccessException(1); //esperava que tivesse uma Restaurante
 		}
 		
-		manager.remove(Restaurante);
+		manager.remove(restaurante);
 		
 	}
 	
