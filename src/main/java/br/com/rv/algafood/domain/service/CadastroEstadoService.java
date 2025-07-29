@@ -20,12 +20,12 @@ public class CadastroEstadoService {
 	public Estado salvar(Estado estado) {
 		
 		//incluiria as regras de negócio
-		return estadoRepository.salvar(estado);
+		return estadoRepository.save(estado);
 	}
 	
 	public void excluir (Long estadoId) {
 		try {
-			estadoRepository.remover(estadoId);
+			estadoRepository.deleteById(estadoId);
 		}catch (EmptyResultDataAccessException e) {
 			throw new EntidadeNaoEncontradaException(
 					String.format("Não existe um cadastro de Estado com código %d", estadoId));

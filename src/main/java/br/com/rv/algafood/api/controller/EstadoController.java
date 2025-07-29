@@ -1,6 +1,7 @@
 package br.com.rv.algafood.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class EstadoController {
 	@GetMapping // (produces = {MediaType.APPLICATION_JSON_VALUE,
 				// MediaType.APPLICATION_XML_VALUE})//produces="application/XML"
 	public List<Estado> listar() {
-		return estadoRepository.listar();
+		return estadoRepository.findAll();
 	}
 
 //	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
@@ -52,7 +53,7 @@ public class EstadoController {
 
 	@GetMapping("/{estadoId}")
 	public ResponseEntity<Estado> buscar(@PathVariable("estadoId") Long id) {
-		Estado estado = estadoRepository.buscar(id);
+		Optional<Estado> estado = estadoRepository.findById(id);
 		// return ResponseEntity.status(HttpStatus.OK).body(estado);//com corpo
 		// return ResponseEntity.status(HttpStatus.OK).build();//sem com corpo
 		// return ResponseEntity.ok(estado);//com corpo shortcut
@@ -64,8 +65,8 @@ public class EstadoController {
 //				.status(HttpStatus.FOUND)
 //				.headers(headers)
 //				.build();
-		if (estado != null) {
-			return ResponseEntity.ok(estado);
+		if (estado.isPresent()) {
+			return ResponseEntity.ok(estado.get());
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -81,9 +82,9 @@ public class EstadoController {
 	@PutMapping("/{estadoId}")
 	public ResponseEntity<?> atualizar(@PathVariable("estadoId") Long estadoId, @RequestBody Estado estado) {
 
-		Estado estadoAtual = estadoRepository.buscar(estadoId);
+		Optional<Estado> estadoAtual = estadoRepository.findById(estadoId);
 
-		if (estadoAtual != null) {
+		if (estadoAtual.isPresent()) {
 			// estadoAtual.setNome(estado.getNome());
 			BeanUtils.copyProperties(estado, estadoAtual, "id"); // copia as propriedades de estado e
 																	// passa para estado atual,
@@ -92,9 +93,9 @@ public class EstadoController {
 			// a partir do terceiro parámetro, tenho os campos a serem desconsiderados na
 			// cópia.
 
-			estadoAtual = cadastroEstadoService.salvar(estadoAtual);
+			Estado estadoSalvo = cadastroEstadoService.salvar(estadoAtual.get());
 
-			return ResponseEntity.ok(estadoAtual);
+			return ResponseEntity.ok(estadoSalvo);
 		}
 		return ResponseEntity.notFound().build();// 404
 

@@ -1,16 +1,8 @@
 package br.com.rv.algafood.domain.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.rv.algafood.domain.model.Cidade;
 
-public interface CidadeRepository {
-	
-	List<Cidade> listar();
-	List<Cidade> consultarPorNome(String nome);
-	Cidade buscar(Long id);
-	Cidade salvar(Cidade cidade);
-	void remover(Long id);
-	
-	
+public interface CidadeRepository extends JpaRepository<Cidade, Long>{
 }

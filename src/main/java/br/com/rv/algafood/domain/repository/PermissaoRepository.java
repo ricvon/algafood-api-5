@@ -1,16 +1,8 @@
 package br.com.rv.algafood.domain.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.rv.algafood.domain.model.Permissao;
 
-public interface PermissaoRepository {
-	
-	List<Permissao> listar();
-	List<Permissao> consultarPorNome(String nome);
-	Permissao buscar(Long id);
-	Permissao salvar(Permissao permissao);
-	void remover(Long id);
-	
-	
+public interface PermissaoRepository extends JpaRepository<Permissao, Long>{
 }

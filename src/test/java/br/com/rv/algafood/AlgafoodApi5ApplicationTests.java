@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AlgafoodApi4ApplicationTests {
+class AlgafoodApi5ApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,6 +1,7 @@
 package br.com.rv.algafood.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class CidadeController {
 	@GetMapping // (produces = {MediaType.APPLICATION_JSON_VALUE,
 				// MediaType.APPLICATION_XML_VALUE})//produces="application/XML"
 	public List<Cidade> listar() {
-		return cidadeRepository.listar();
+		return cidadeRepository.findAll();
 	}
 
 //	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
@@ -52,7 +53,7 @@ public class CidadeController {
 
 	@GetMapping("/{cidadeId}")
 	public ResponseEntity<Cidade> buscar(@PathVariable("cidadeId") Long id) {
-		Cidade cidade = cidadeRepository.buscar(id);
+		Optional<Cidade> cidade = cidadeRepository.findById(id);
 		// return ResponseEntity.status(HttpStatus.OK).body(cidade);//com corpo
 		// return ResponseEntity.status(HttpStatus.OK).build();//sem com corpo
 		// return ResponseEntity.ok(cidade);//com corpo shortcut
@@ -64,8 +65,8 @@ public class CidadeController {
 //				.status(HttpStatus.FOUND)
 //				.headers(headers)
 //				.build();
-		if (cidade != null) {
-			return ResponseEntity.ok(cidade);
+		if (cidade.isPresent()) {
+			return ResponseEntity.ok(cidade.get());
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -86,20 +87,20 @@ public class CidadeController {
 			@RequestBody Cidade cidade) {
 
 		try {
-			Cidade cidadeAtual = cidadeRepository.buscar(cidadeId);
+			Optional<Cidade> cidadeAtual = cidadeRepository.findById(cidadeId);
 
-			if (cidadeAtual != null) {
+			if (cidadeAtual.isPresent()) {
 				// cidadeAtual.setNome(cidade.getNome());
-				BeanUtils.copyProperties(cidade, cidadeAtual, "id"); // copia as propriedades de cidade e
+				BeanUtils.copyProperties(cidade, cidadeAtual.get(), "id"); // copia as propriedades de cidade e
 																				// passa para cidade atual,
 																				// ignornado a cópia do id, pois ele
 																				// está nulo em cidade
 				// a partir do terceiro parámetro, tenho os campos a serem desconsiderados na
 				// cópia.
 
-				cidadeAtual = cadastroCidadeService.salvar(cidadeAtual);
+				Cidade cidadeSalva = cadastroCidadeService.salvar(cidadeAtual.get());
 
-				return ResponseEntity.ok(cidadeAtual);
+				return ResponseEntity.ok(cidadeSalva);
 			}
 			return ResponseEntity.notFound().build();// 404
 

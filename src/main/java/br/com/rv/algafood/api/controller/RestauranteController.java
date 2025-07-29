@@ -3,6 +3,7 @@ package br.com.rv.algafood.api.controller;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class RestauranteController {
 	@GetMapping // (produces = {MediaType.APPLICATION_JSON_VALUE,
 				// MediaType.APPLICATION_XML_VALUE})//produces="application/XML"
 	public List<Restaurante> listar() {
-		return restauranteRepository.listar();
+		return restauranteRepository.findAll();
 	}
 
 //	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
@@ -58,7 +59,7 @@ public class RestauranteController {
 
 	@GetMapping("/{restauranteId}")
 	public ResponseEntity<Restaurante> buscar(@PathVariable("restauranteId") Long id) {
-		Restaurante restaurante = restauranteRepository.buscar(id);
+		Optional<Restaurante> restaurante = restauranteRepository.findById(id);
 		// return ResponseEntity.status(HttpStatus.OK).body(restaurante);//com corpo
 		// return ResponseEntity.status(HttpStatus.OK).build();//sem com corpo
 		// return ResponseEntity.ok(restaurante);//com corpo shortcut
@@ -70,8 +71,8 @@ public class RestauranteController {
 //				.status(HttpStatus.FOUND)
 //				.headers(headers)
 //				.build();
-		if (restaurante != null) {
-			return ResponseEntity.ok(restaurante);
+		if (restaurante.isPresent()) {
+			return ResponseEntity.ok(restaurante.get());
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -92,9 +93,9 @@ public class RestauranteController {
 			@RequestBody Restaurante restaurante) {
 
 		try {
-			Restaurante restauranteAtual = restauranteRepository.buscar(restauranteId);
+			Optional<Restaurante> restauranteAtual = restauranteRepository.findById(restauranteId);
 
-			if (restauranteAtual != null) {
+			if (restauranteAtual.isPresent()) {
 				// restauranteAtual.setNome(restaurante.getNome());
 				BeanUtils.copyProperties(restaurante, restauranteAtual, "id"); // copia as propriedades de restaurante e
 																				// passa para restaurante atual,
@@ -103,9 +104,9 @@ public class RestauranteController {
 				// a partir do terceiro parámetro, tenho os campos a serem desconsiderados na
 				// cópia.
 
-				restauranteAtual = cadastroRestauranteService.salvar(restauranteAtual);
+				Restaurante restauranteSalvo = cadastroRestauranteService.salvar(restauranteAtual.get());
 
-				return ResponseEntity.ok(restauranteAtual);
+				return ResponseEntity.ok(restauranteSalvo);
 			}
 			return ResponseEntity.notFound().build();// 404
 
@@ -134,15 +135,15 @@ public class RestauranteController {
 	public ResponseEntity<?> atualizarParcial(@PathVariable("restauranteId") Long restauranteId,
 			@RequestBody Map<String, Object> campos) {
 
-		Restaurante restauranteAtual = restauranteRepository.buscar(restauranteId);
+		Optional<Restaurante> restauranteAtual = restauranteRepository.findById(restauranteId);
 
-		if (restauranteAtual == null) {
+		if (restauranteAtual.isEmpty()) {
 			return ResponseEntity.notFound().build();// 404
 		}
 
-		merge(campos, restauranteAtual);
+		merge(campos, restauranteAtual.get());
 
-		return atualizar(restauranteId, restauranteAtual);
+		return atualizar(restauranteId, restauranteAtual.get());
 	}
 
 	private void merge(Map<String, Object> dadosOrigem, Restaurante restauranteDestino) {
