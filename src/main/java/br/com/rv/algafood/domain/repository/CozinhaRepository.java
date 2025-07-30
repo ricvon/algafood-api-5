@@ -10,6 +10,6 @@ import br.com.rv.algafood.domain.model.Cozinha;
 
 @Repository
 public interface CozinhaRepository extends JpaRepository<Cozinha, Long>{	
-	List<Cozinha> findTodasByNome(String nome);//eu posso colocar findby<campo> ou apenas o <campo> ou find<qualquer coisa>by<campo>
+	List<Cozinha> findTodasByNomeContaining(String nome);//eu posso colocar findby<campo> ou apenas o <campo> ou find<qualquer coisa>by<campo>
 	Optional<Cozinha> findByNome(String nome);//eu posso colocar findby<campo> ou apenas o <campo> ou find<qualquer coisa>by<campo>
 }
