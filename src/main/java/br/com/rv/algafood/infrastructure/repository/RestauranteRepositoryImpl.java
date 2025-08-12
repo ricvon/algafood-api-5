@@ -1,9 +1,11 @@
 package br.com.rv.algafood.infrastructure.repository;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import br.com.rv.algafood.domain.model.Restaurante;
 import br.com.rv.algafood.domain.repository.RestauranteRepositoryQueries;
@@ -16,13 +18,12 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 @Repository
-public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries{
+public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
 	@PersistenceContext
 	private EntityManager manager;
-	
+
 	@Override
-	public List<Restaurante> find (String nome,
-			BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal){
+	public List<Restaurante> find(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) {
 //	Aula 5.11 - JPQL Consulta fixa, com parâmetros obrigatórios
 //		var jpql = "from Restaurante where nome like :nome "
 //				+"and taxaFrete between :taxaInicial and :taxaFinal";
@@ -51,26 +52,36 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries{
 //		TypedQuery<Restaurante> query = manager.createQuery(jpql.toString(), Restaurante.class);		
 //		parametros.forEach((chave,valor)->query.setParameter(chave, valor));		
 //		return query.getResultList();
-		
+
 		CriteriaBuilder builder = manager.getCriteriaBuilder();
-		
+
 		CriteriaQuery<Restaurante> criteria = builder.createQuery(Restaurante.class);
+
+		Root<Restaurante> root = criteria.from(Restaurante.class); // semelhante à: jpql.append("from Restaurante where
+																	// 0=0 ");
+
+		var predicates = new ArrayList<Predicate>();
+
+		if (StringUtils.hasLength(nome)) {
+			// Predicate nomePredicate = builder.like(root.get("nome"), "%" + nome + "%");
+			predicates.add(builder.like(root.get("nome"), "%" + nome + "%"));
+		}
+
+		if (taxaFreteInicial != null) {
+			//Predicate taxaInicialPredicate = builder.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial);
+			predicates.add(builder.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial));
+		}
+
+		if (taxaFreteFinal != null) {
+			//Predicate taxaFinalPredicate = builder.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal);
+			predicates.add(builder.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal));
+		}
 		
-		Root<Restaurante> root = criteria.from(Restaurante.class); //semelhante à: jpql.append("from Restaurante where 0=0 ");		
-		
-		Predicate nomePredicate = builder.like(root.get("nome"), "%" + nome + "%");
-		
-		Predicate taxaInicialPredicate = builder
-				.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial);
-		
-		Predicate taxaFinalPredicate = builder
-				.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal);
-		
-		criteria.where(nomePredicate, taxaInicialPredicate, taxaFinalPredicate);
-		
+		criteria.where(predicates.toArray(new Predicate[0]));
+
 		TypedQuery<Restaurante> query = manager.createQuery(criteria);
-		
+
 		return query.getResultList();
 	}
-		
+
 }
