@@ -1,5 +1,8 @@
 package br.com.rv.algafood.api.controller;
 
+import static br.com.rv.algafood.infrastructure.repository.spec.RestauranteSpecs.comFreteGratis;
+import static br.com.rv.algafood.infrastructure.repository.spec.RestauranteSpecs.comNomeSemelhante;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +17,6 @@ import br.com.rv.algafood.domain.model.Cozinha;
 import br.com.rv.algafood.domain.model.Restaurante;
 import br.com.rv.algafood.domain.repository.CozinhaRepository;
 import br.com.rv.algafood.domain.repository.RestauranteRepository;
-import br.com.rv.algafood.infrastructure.repository.spec.RestauranteComFreteGratisSpec;
-import br.com.rv.algafood.infrastructure.repository.spec.RestauranteComNomeSemelhanteSpec;
 
 @RestController
 @RequestMapping("/teste")
@@ -76,8 +77,10 @@ public class TesteController {
 	
 	@GetMapping("/restaurantes/com-frete-gratis") //padrão de projeto especification
 	public List<Restaurante> restaurantesComFreteGratis(String nome){
-		var comFreteGratis = new RestauranteComFreteGratisSpec();
-		var comNomeSemelhante = new RestauranteComNomeSemelhanteSpec(nome);
-		return restauranteRepository.findAll(comFreteGratis.and(comNomeSemelhante));
+//		var comFreteGratis = new RestauranteComFreteGratisSpec();
+//		var comNomeSemelhante = new RestauranteComNomeSemelhanteSpec(nome);
+//		return restauranteRepository.findAll(comFreteGratis.and(comNomeSemelhante));
+		//return restauranteRepository.findAll(RestauranteSpecs.comFreteGratis().and(RestauranteSpecs.comNomeSemelhante(nome)));
+		return restauranteRepository.findAll(comFreteGratis().and(comNomeSemelhante(nome)));
 	}		
 }
