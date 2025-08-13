@@ -8,10 +8,10 @@ import br.com.rv.algafood.infrastructure.repository.CustomJpaRepositoryImpl;
 
 @SpringBootApplication
 @EnableJpaRepositories(repositoryBaseClass=CustomJpaRepositoryImpl.class)
-public class AlgafoodApi5Application {
+public class AlgafoodApi6Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AlgafoodApi5Application.class, args);
+		SpringApplication.run(AlgafoodApi6Application.class, args);
 	}
 
 }
